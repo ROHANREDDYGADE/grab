@@ -1,10 +1,13 @@
 import productModel from "../models/productModel.js";
 import fs from "fs";
 import slugify from "slugify";
+// import { useAuth } from "../client/src/context/auth.js";
+// const [auth, setAuth] = useAuth();
+
 
 export const createProductController = async (req, res) => {
   try {
-    const { name, description, userid, username, category,  } =
+    const { name, description, userid, username, category,company  } =
       req.fields;
     const { photo } = req.files;
     //alidation
@@ -14,9 +17,9 @@ export const createProductController = async (req, res) => {
       case !description:
         return res.status(500).send({ error: "Description is Required" });
       case !userid:
-        return res.status(500).send({ error: "Description is Required" });
+        return res.status(500).send({ error: "userid is Required" });
       case !username:
-        return res.status(500).send({ error: "Description is Required" });
+        return res.status(500).send({ error: "username is Required" });
       case !category:
         return res.status(500).send({ error: "Category is Required" });
      
@@ -26,7 +29,7 @@ export const createProductController = async (req, res) => {
           .send({ error: "photo is Required and should be less then 1mb" });
     }
 
-    const products = new productModel({ ...req.fields, slug: slugify(name) });
+    const products = new productModel({ ...req.fields, slug: slugify(company) });
     if (photo) {
       products.photo.data = fs.readFileSync(photo.path);
       products.photo.contentType = photo.type;
@@ -71,6 +74,37 @@ export const getProductController = async (req, res) => {
     });
   }
 };
+
+// export const getSelfController = async (req, res) => {
+//   try {
+//     // Destructure user ID directly from auth object
+//     const { _id,name } = auth;
+
+//     // Fetch products associated with the user ID
+//     const products = await productModel
+//       .find({ userid: name._id }) // Filter products by user ID
+//       .populate("category")
+//       .select("-photo")
+//       .limit(12)
+//       .sort({ createdAt: -1 });
+
+//     res.status(200).send({
+//       success: true,
+//       countTotal: products.length,
+//       message: "All Products",
+//       products,
+//     });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).send({
+//       success: false,
+//       message: "Error in getting products",
+//       error: error.message,
+//     });
+//   }
+// };
+
+
 // get single product
 export const getSingleProductController = async (req, res) => {
   try {
@@ -259,66 +293,66 @@ export const updateProductController = async (req, res) => {
 };
 
 // filters
-export const productFiltersController = async (req, res) => {
-  try {
-    const { checked, radio } = req.body;
-    let args = {};
-    if (checked.length > 0) args.category = checked;
-    if (radio.length) args.price = { $gte: radio[0], $lte: radio[1] };
-    const products = await productModel.find(args);
-    res.status(200).send({
-      success: true,
-      products,
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(400).send({
-      success: false,
-      message: "Error WHile Filtering Products",
-      error,
-    });
-  }
-};
+// export const productFiltersController = async (req, res) => {
+//   try {
+//     const { checked, radio } = req.body;
+//     let args = {};
+//     if (checked.length > 0) args.category = checked;
+//     if (radio.length) args.price = { $gte: radio[0], $lte: radio[1] };
+//     const products = await productModel.find(args);
+//     res.status(200).send({
+//       success: true,
+//       products,
+//     });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(400).send({
+//       success: false,
+//       message: "Error WHile Filtering Products",
+//       error,
+//     });
+//   }
+// };
 
 // product count
-export const productCountController = async (req, res) => {
-  try {
-    const total = await productModel.find({}).estimatedDocumentCount();
-    res.status(200).send({
-      success: true,
-      total,
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(400).send({
-      message: "Error in product count",
-      error,
-      success: false,
-    });
-  }
-};
+// export const productCountController = async (req, res) => {
+//   try {
+//     const total = await productModel.find({}).estimatedDocumentCount();
+//     res.status(200).send({
+//       success: true,
+//       total,
+//     });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(400).send({
+//       message: "Error in product count",
+//       error,
+//       success: false,
+//     });
+//   }
+// };
 
 // product list base on page
-export const productListController = async (req, res) => {
-  try {
-    const perPage = 2;
-    const page = req.params.page ? req.params.page : 1;
-    const products = await productModel
-      .find({})
-      .select("-photo")
-      .skip((page - 1) * perPage)
-      .limit(perPage)
-      .sort({ createdAt: -1 });
-    res.status(200).send({
-      success: true,
-      products,
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(400).send({
-      success: false,
-      message: "error in per page ctrl",
-      error,
-    });
-  }
-};
+// export const productListController = async (req, res) => {
+//   try {
+//     const perPage = 2;
+//     const page = req.params.page ? req.params.page : 1;
+//     const products = await productModel
+//       .find({})
+//       .select("-photo")
+//       .skip((page - 1) * perPage)
+//       .limit(perPage)
+//       .sort({ createdAt: -1 });
+//     res.status(200).send({
+//       success: true,
+//       products,
+//     });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(400).send({
+//       success: false,
+//       message: "error in per page ctrl",
+//       error,
+//     });
+//   }
+// };

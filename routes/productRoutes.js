@@ -5,9 +5,9 @@ import {
   getProductController,
   getSingleProductController,
   myUploadsController,
-  productCountController,
-  productFiltersController,
-  productListController,
+  // productCountController,
+  // productFiltersController,
+  // productListController,
   productPhotoController,
   updateProductController,
   getSingleProductControllerinvestor,
@@ -60,13 +60,13 @@ router.get("/product-photo/:pid", productPhotoController);
 router.delete("/delete-product/:pid", deleteProductController);
 
 //filter product
-router.post("/product-filters", productFiltersController);
+// router.post("/product-filters", productFiltersController);
 
-//product count
-router.get("/product-count", productCountController);
+// //product count
+// router.get("/product-count", productCountController);
 
-//product per page
-router.get("/product-list/:page", productListController);
+// //product per page
+// router.get("/product-list/:page", productListController);
 // router.get("/product-list-investor/:page",isInvestor,requireSignIn, productListController);
 
 router.get("/ideas",requireSignIn, isInvestor)
