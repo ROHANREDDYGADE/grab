@@ -55,7 +55,7 @@ const productSchema = new mongoose.Schema(
     },
     privateround: {
       type: String,
-      required: true,
+      required: false,
     },
     fundraising: {
       type: String,
@@ -64,13 +64,18 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    traction: {
-      type: String,
-    },
+    // traction: {
+    //   type: String,
+    // },
     commitment: {
       type: String,
       required: true,
-    }
+    },
+    document: {
+      name: String,
+      data: Buffer,
+      contentType: String,
+    },
   },
   { timestamps: true }
 );

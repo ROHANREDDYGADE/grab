@@ -2,6 +2,9 @@ import userModel from "../models/userModel.js";
 import { comparePassword, hashPassword } from "./../helpers/authHelper.js";
 import JWT from "jsonwebtoken";
 
+
+
+
 export const registerController = async (req, res) => {
   try {
     const { name, email, password, phone, address, answer } = req.body;
@@ -161,3 +164,108 @@ export const testController = (req, res) => {
     res.send({ error });
   }
 };
+
+
+// import userModel from "../models/userModel.js";
+
+// Get all users
+export const getAllUsersController = async (req, res) => {
+  try {
+    const users = await userModel.find({});
+    res.status(200).send({
+      success: true,
+      countTotal: users.length,
+      message: "All Users",
+      users,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error in getting users",
+      error: error.message,
+    });
+  }
+};
+
+
+export const deleteUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    console.log("Received userId for deletion:", userId); // Add this line for debugging
+    // Check if the user exists
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+    // If user exists, delete it
+    await userModel.findByIdAndDelete(userId);
+    console.log("User deleted successfully"); // Add this line for debugging
+    res.status(200).json({ success: true, message: "User deleted successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Error deleting user", error: error.message });
+  }
+};
+
+
+
+// Update user details
+export const updateUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { name, email, phone, address, role } = req.body;
+
+    // Check if the user exists
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    // Update user fields
+    user.name = name || user.name;
+    user.email = email || user.email;
+    user.phone = phone || user.phone;
+    user.address = address || user.address;
+    user.role = role || user.role;
+
+    // Save the updated user
+    await user.save();
+
+    res.status(200).json({ success: true, message: "User updated successfully" });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ success: false, message: "Error updating user", error: error.message });
+  }
+};
+
+
+
+// authController.js
+
+// Import userModel and other necessary modules
+
+// Function to get a user by ID
+export const getUserById = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    // Check if the userId is provided
+    if (!userId) {
+      return res.status(400).json({ success: false, message: "User ID is required" });
+    }
+    // Find the user by ID in the database
+    const user = await userModel.findById(userId);
+    // Check if the user exists
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+    // Return the user data
+    res.status(200).json({ success: true, message: "User found", user });
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    res.status(500).json({ success: false, message: "Error fetching user", error: error.message });
+  }
+};
+
+// Other controller functions
+

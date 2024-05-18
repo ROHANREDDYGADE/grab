@@ -4,16 +4,32 @@ import {
   deleteProductController,
   getProductController,
   getSingleProductController,
+  getSingleProductController2,
   myUploadsController,
   // productCountController,
   // productFiltersController,
   // productListController,
+  downloadDocumentController,
   productPhotoController,
   updateProductController,
-  getSingleProductControllerinvestor,
+  editProduct,
+  editProductController,
+  myUploadsController2
+
+  // cartRoute
+
 } from "../controllers/productController.js";
 import { isAdmin, requireSignIn, isInvestor, isFounder } from "../middlewares/authMiddleware.js";
 import formidable from "express-formidable";
+import {
+  addToFavoritesController,
+  isProductInFavoritesController,
+  removeFromFavoritesController,
+  getProductsByUserId,
+  getAllCartItemsController
+
+} from "../controllers/cartController.js";
+
 
 const router = express.Router();
 
@@ -25,6 +41,12 @@ router.post(
   formidable(),
   createProductController
 );
+// app.use("/cart", cartRoutes);
+router.post("/add-to-favorites", addToFavoritesController);
+router.post("/remove-from-favorites", removeFromFavoritesController);
+router.get('/is-favorite/:productid/:userid', isProductInFavoritesController);
+router.get('/my-favorites', getProductsByUserId, requireSignIn)
+router.get("/cartall", getAllCartItemsController);
 
 router.post(
   "/user-create-product",
@@ -41,33 +63,28 @@ router.put(
   formidable(),
   updateProductController
 );
+router.put(
+  "/edit-product/:pid",
+  requireSignIn,
+  formidable(),
+  editProductController
+);
 
 //get products
 router.get("/get-product",requireSignIn, getProductController);
 // To this
-router.get("/my-pitch", requireSignIn, isFounder, myUploadsController);
+router.get("/my-pitch", requireSignIn,isFounder, myUploadsController);
+router.get("/my-pitch-2", requireSignIn, myUploadsController2);
 
 //single product
 router.get("/get-product/:slug",requireSignIn, getSingleProductController);
-// router.get("/get-product/:slug",requireSignIn, getSingleProductController);
 
-// router.get("/get-product-founder/:slug",isFounder,requireSignIn, getSingleProductController);
-// router.get("/get-product-investor/:slug",isInvestor,requireSignIn, getSingleProductControllerinvestor);
-//get photo
 router.get("/product-photo/:pid", productPhotoController);
-
+router.put('/edit-product/:productId',editProduct);
 //delete rproduct
 router.delete("/delete-product/:pid", deleteProductController);
+router.get("/download-document/:productId", requireSignIn, downloadDocumentController);
 
-//filter product
-// router.post("/product-filters", productFiltersController);
-
-// //product count
-// router.get("/product-count", productCountController);
-
-// //product per page
-// router.get("/product-list/:page", productListController);
-// router.get("/product-list-investor/:page",isInvestor,requireSignIn, productListController);
 
 router.get("/ideas",requireSignIn, isInvestor)
 
